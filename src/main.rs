@@ -1,19 +1,21 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
+type Link<T> = Option<Rc<RefCell<Node<T>>>>;
+
 #[derive(Debug)]
-struct LinkedList<T: Copy> {
-    head: Option<Rc<RefCell<Node<T>>>>,
-    tail: Option<Rc<RefCell<Node<T>>>>,
+struct LinkedList<T> {
+    head: Link<T>,
+    tail: Link<T>,
 }
 
 #[derive(Debug)]
-struct Node<T: Copy> {
+struct Node<T> {
     data: T,
-    next: Option<Rc<RefCell<Node<T>>>>,
+    next: Link<T>,
 }
 
-impl<T: Copy> LinkedList<T> {
+impl<T> LinkedList<T> {
     fn new() -> Self {
         LinkedList {
             head: None,
@@ -41,7 +43,7 @@ impl<T: Copy> LinkedList<T> {
     }
 
     fn pop(&mut self) -> Option<T> {
-        match self.head.take() {
+        let old_head = match self.head.take() {
             None => None,
             Some(head) => {
                 match head.borrow_mut().next.take() {
@@ -49,9 +51,11 @@ impl<T: Copy> LinkedList<T> {
                     Some(next) => self.head = Some(next),
                 }
                 self.tail = None;
-                Some(head.borrow_mut().data)
+                Some(head)
             }
-        }
+        };
+        // Option<Rc<RefCell<Node<T>>>> -> Option<T>
+        old_head.map(|r| Rc::try_unwrap(r).ok().unwrap().into_inner().data)
     }
 }
 
