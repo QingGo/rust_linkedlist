@@ -17,14 +17,16 @@ struct Node<T> {
     next: Link<T>,
 }
 
-impl<T> List<T> for LinkedList<T> {
-    fn new() -> Self {
+impl<T> LinkedList<T> {
+    pub fn new() -> Self {
         LinkedList {
             head: None,
             tail: None,
         }
     }
+}
 
+impl<T: std::fmt::Debug> List<T> for LinkedList<T> {
     fn push(&mut self, elem: T) {
         let new_node = Node {
             data: elem,
