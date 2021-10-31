@@ -40,7 +40,7 @@ impl<T: std::fmt::Debug> List<T> for LinkedList<T> {
                 self.tail = Some(Rc::clone(&new_node_rc));
             }
             Some(ref mut head) => {
-                new_node_rc.borrow_mut().next = Some(Rc::clone(&head));
+                new_node_rc.borrow_mut().next = Some(Rc::clone(head));
                 self.head = Some(new_node_rc);
             }
         }
